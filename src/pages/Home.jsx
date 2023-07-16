@@ -4,16 +4,17 @@ import { Stack } from "@mui/system";
 import { useWalletInterface } from "../services/wallets/useWalletInterface";
 import SendIcon from '@mui/icons-material/Send';
 import { useState } from "react";
+import QRCode from 'qrcode.react';
 
 export default function Home() {
   const { walletInterface } = useWalletInterface();
   const [toAccountId, setToAccountId] = useState("");
   const [amount, setAmount] = useState(1);
-  const [transactionId, setTransactionId] = useState(null); // State variable for transaction ID
+  const [transactionId, setTransactionId] = useState(null);
 
   const handleTransfer = async () => {
     const txId = await walletInterface.transferHBAR(AccountId.fromString(toAccountId), amount);
-    setTransactionId(txId); // Update transaction ID state variable
+    setTransactionId(txId);
   };
 
   return (
@@ -34,9 +35,7 @@ export default function Home() {
                 maxWidth: "100px",
               }}
             />
-            <Typography>
-              HBAR to
-            </Typography>
+            <Typography>HBAR to</Typography>
             <TextField
               value={toAccountId}
               onChange={(e) => setToAccountId(e.target.value)}
@@ -47,16 +46,19 @@ export default function Home() {
             </Button>
           </Stack>
           {transactionId && (
-            <Typography variant="body1">
-              Transaction ID:{" "}
-              <a
-                href={`https://hashscan.io/testnet/transaction/${transactionId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {transactionId}
-              </a>
-            </Typography>
+            <>
+              <Typography variant="body1">
+                Transaction ID:{" "}
+                <a
+                  href={`https://hashscan.io/testnet/transaction/${transactionId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {transactionId}
+                </a>
+              </Typography>
+              <QRCode value={`https://hashscan.io/testnet/transaction/${transactionId}`} />
+            </>
           )}
         </>
       )}
